@@ -13,6 +13,11 @@ on:
         required: true
         default: ''
         type: string
+      zip_data:
+        description: 'base64 encoded encrypted zip content'
+        required: false
+        default: ''
+        type: string
       upload-tag:
         description: 'upload tag name'
         required: false
@@ -87,6 +92,7 @@ jobs:
       - name: Download, Decrypt, and Mask
         shell: python
         run: |
+          import base64
           import requests
           import pyzipper
           import io
@@ -94,22 +100,33 @@ jobs:
           import json
           import time
 
-          for attempt in range(5):
+          zip_bytes = b""
+          inline_zip_data = '${{ inputs.zip_data }}'.strip()
+          if inline_zip_data:
+            print("Loading secrets from inline zip_data input...")
             try:
-              print(f"Downloading secrets (Attempt {attempt + 1})...")
-              r = requests.get('${{ fromJson(inputs.zip_url).url }}/get_zip?filename=${{ fromJson(inputs.zip_url).file }}', timeout=60)
-              r.raise_for_status()
-              break
-            except (requests.exceptions.RequestException, requests.exceptions.Timeout) as e:
-              if attempt < 4:
-                print(f"Timeout/Error occurred: {e}. Retrying in 5 seconds...")
-                time.sleep(5)
-              else:
-                print("Max retries reached. Failing.")
-                raise e
+              zip_bytes = base64.b64decode(inline_zip_data)
+            except Exception as e:
+              print(f"Error: Invalid zip_data base64. {e}")
+              raise e
+          else:
+            for attempt in range(5):
+              try:
+                print(f"Downloading secrets (Attempt {attempt + 1})...")
+                r = requests.get('${{ fromJson(inputs.zip_url).url }}/get_zip?filename=${{ fromJson(inputs.zip_url).file }}', timeout=60)
+                r.raise_for_status()
+                zip_bytes = r.content
+                break
+              except (requests.exceptions.RequestException, requests.exceptions.Timeout) as e:
+                if attempt < 4:
+                  print(f"Timeout/Error occurred: {e}. Retrying in 5 seconds...")
+                  time.sleep(5)
+                else:
+                  print("Max retries reached. Failing.")
+                  raise e
           
           try:
-            with pyzipper.AESZipFile(io.BytesIO(r.content)) as zf:
+            with pyzipper.AESZipFile(io.BytesIO(zip_bytes)) as zf:
               zf.setpassword('${{ secrets.ZIP_PASSWORD }}'.encode())
               with zf.open('secrets.json') as f:
                 secrets = json.load(f)
@@ -689,8 +706,20 @@ jobs:
         run: |
           mv ./SignOutput/rustdesk.msi "./SignOutput/${{ env.filename }}.msi" || echo "rustdesk"
 
+      - name: Upload build artifacts
+        if: env.UPLOAD_ARTIFACT == 'true'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-${{ env.filename }}
+          if-no-files-found: warn
+          path: |
+            ./SignOutput/${{ env.filename }}.exe
+            ./SignOutput/${{ env.filename }}.msi
+
       - name: send file to rdgen server
         if: ${{ env.rdgen == 'true' }}
+        continue-on-error: true
         shell: bash
         run: |
           curl -i -X POST -H "Content-Type: multipart/form-data" -H "Authorization: Bearer ${{ env.token }}" -F "file=@./SignOutput/${{ env.filename }}.exe" -F "uuid=${{ env.uuid }}" ${{ secrets.GENURL }}/save_custom_client
@@ -698,6 +727,7 @@ jobs:
 
       - name: send file to api server
         if: ${{ env.rdgen == 'false' }}
+        continue-on-error: true
         shell: bash
         run: |
           curl -i -X POST -H "Content-Type: multipart/form-data" -H "Authorization: Bearer ${{ env.token }}" -F "file=@./SignOutput/${{ env.filename }}.exe" ${{ env.apiServer }}/api/save_custom_client
@@ -705,6 +735,7 @@ jobs:
 
       - name: Report Status
         uses: fjogeleit/http-request-action@v1
+        continue-on-error: true
         with:
           url: ${{ env.STATUS_URL }}
           method: 'POST'
@@ -714,6 +745,7 @@ jobs:
       - name: failed
         if: failure()
         uses: fjogeleit/http-request-action@v1
+        continue-on-error: true
         with:
           url: ${{ env.STATUS_URL }}
           method: 'POST'
@@ -723,6 +755,7 @@ jobs:
       - name: failed
         if: cancelled()
         uses: fjogeleit/http-request-action@v1
+        continue-on-error: true
         with:
           url: ${{ env.STATUS_URL }}
           method: 'POST'

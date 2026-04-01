@@ -412,12 +412,15 @@ def generator_view(request):
             zipJson['file'] = zip_filename
 
             zip_url = json.dumps(zipJson)
+            with open(zip_path, "rb") as zip_file:
+                zip_data = base64.b64encode(zip_file.read()).decode("ascii")
 
             data = {
                 "ref":_settings.GHBRANCH,
                 "inputs":{
                     "version":version,
-                    "zip_url":zip_url
+                    "zip_url":zip_url,
+                    "zip_data":zip_data
                 }
             } 
             #print(data)
