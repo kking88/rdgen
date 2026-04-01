@@ -193,9 +193,13 @@ def generator_view(request):
             if not all(char.isascii() for char in appname):
                 appname = "rustdesk"
             myuuid = str(uuid.uuid4())
-            protocol = _settings.PROTOCOL
-            host = request.get_host()
-            full_url = f"{protocol}://{host}"
+            configured_genurl = str(getattr(_settings, "GENURL", "")).strip()
+            if configured_genurl:
+                full_url = configured_genurl.rstrip("/")
+            else:
+                protocol = _settings.PROTOCOL
+                host = request.get_host()
+                full_url = f"{protocol}://{host}"
             try:
                 iconfile = form.cleaned_data.get('iconfile')
                 if not iconfile:
