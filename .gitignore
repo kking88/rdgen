@@ -1,0 +1,10 @@
+*.pyc
+db.sqlite3
+gunicorn.conf
+.venv
+__pycache__/
+rdgenerator/__pycache__/
+rdgen/__pycache__/
+temp_zips/
+png/
+exe/

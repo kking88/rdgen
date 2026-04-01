@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RustDesk 自定义客户端生成器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #0a0a0a; color: #e0e0e0; margin: 0; padding: 20px; }
+        .platform, .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .container { display: grid; grid-template-columns: 1fr 1fr; grid-gap: 20px; }
+        h1 { color: #fff; text-align: center; }
+        h2 { color: #fff; margin-top: 0; font-size: 18px; }
+        .section { background-color: #111; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #bbb; font-size: 14px; }
+        input[type="text"], input[type="password"], select, textarea { width: 100%; padding: 10px; margin-bottom: 12px; background-color: #1a1a1a; border: 1px solid #333; border-radius: 6px; color: #fff; box-sizing: border-box; }
+        input[type="radio"], input[type="checkbox"] { margin-right: 8px; }
+        button { background: linear-gradient(90deg, #0077ff, #00d4ff); color: #fff; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; margin: 5px; }
+        button:hover { opacity: 0.9; }
+        .platform-icons { display: flex; justify-content: space-around; margin-bottom: 20px; }
+        .platform-icon { font-size: 36px; color: #555; cursor: pointer; transition: color 0.2s; }
+        .platform-icon:hover, .platform-icon.active { color: #0077ff; }
+        .text-64, .text-32 { font-size: 0.5em; font-weight: bold; position: absolute; color: white; bottom: -0.2em; right: -0.2em; }
+        .checkbox-group { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+        .checkbox-group label { display: flex; align-items: center; font-size: 13px; }
+        .error, .errorlist { color: #ff4444; }
+        .errorlist { list-style: none; padding: 0; margin: 10px auto; text-align: center; }
+        .config-buttons { text-align: center; margin: 20px 0; }
+        .config-buttons button { background: #333; }
+        small { color: #666; }
+        a { color: #0077ff; }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-cogs"></i> RustDesk 自定义客户端生成器</h1>
+    <div class="config-buttons">
+        <button type="button" onclick="saveFormData()"><i class="fas fa-save"></i> 保存配置</button>
+        <input type="file" id="fileInput" style="display:none;" accept=".json">
+        <button type="button" onclick="loadFormData()"><i class="fas fa-upload"></i> 加载配置</button>
+    </div>
+    <form id="myForm" action="/generator" method="post" enctype="multipart/form-data">
+        {% if form.iconfile.errors %}<ul class="errorlist">{% for error in form.iconfile.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+        <div class="platform">
+            <div class="section">
+                <h2><i class="fas fa-desktop"></i> 选择平台</h2>
+                <div class="platform-icons">
+                    <span class="fa-stack fa-lg"><i class="fab fa-windows fa-stack-2x platform-icon active" data-platform="windows"></i><strong class="fa-stack-1x text-64">64</strong></span>
+                    <span class="fa-stack fa-lg"><i class="fab fa-windows fa-stack-2x platform-icon" data-platform="windows-x86"></i><strong class="fa-stack-1x text-32">32</strong></span>
+                    <i class="fab fa-linux platform-icon" data-platform="linux"></i>
+                    <i class="fab fa-android platform-icon" data-platform="android"></i>
+                    <i class="fab fa-apple platform-icon" data-platform="macos"></i>
+                </div>
+                {{ form.platform }}
+                <label for="id_version">RustDesk 版本:</label>{{ form.version }}
+                <label>{{ form.delayFix }} 修复第三方API连接延迟</label>
+            </div>
+        </div>
+        <div class="container">
+            <div class="section">
+                <h2><i class="fas fa-sliders-h"></i> 基本设置</h2>
+                <label>文件名（仅英文，无空格特殊字符）:</label>{{ form.exename }}<span id="filenameError" class="error"></span>
+                <label>应用名称（留空使用默认）:</label>{{ form.appname }}
+                <label>连接类型:</label>{{ form.direction }}
+                <label>禁用安装:</label>{{ form.installation }}
+                <label>禁用设置:</label>{{ form.settings }}
+            </div>
+            <div class="section">
+                <h2><i class="fas fa-server"></i> 服务器配置</h2>
+                <label>服务器地址:</label>{{ form.serverIP }}
+                <label>公钥:</label>{{ form.key }}
+                <label>API 服务器:</label>{{ form.apiServer }}
+                <label>自定义链接:</label>{{ form.urlLink }}
+                <label>自定义下载地址:</label>{{ form.downloadLink }}
+                <label>公司名称:</label>{{ form.compname }}
+                <label>内置服务器组 JSON（可选）:</label>{{ form.serverProfilesJson }}
+                <small>格式: [{"name":"主站","idServer":"host:21116","relayServer":"host:21117","apiServer":"https://api.example.com","key":"xxx"}]</small>
+                {% if form.serverProfilesJson.errors %}
+                    <ul class="errorlist">{% for error in form.serverProfilesJson.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+            <div class="section">
+                <h2><i class="fas fa-shield-alt"></i> 安全设置</h2>
+                <label>会话审批方式:</label>{{ form.passApproveMode }}
+                <label>固定密码:</label>{{ form.permanentPassword }}<small>*此密码为默认密码，客户端可修改</small><br><br>
+                <label>{{ form.denyLan }} 禁止局域网发现</label>
+                <label>{{ form.enableDirectIP }} 启用直接IP访问</label>
+                <label>直连端口（可选）:</label>{{ form.directAccessPort }}
+                <label>IP白名单（逗号/分号/换行分隔）:</label>{{ form.ipWhitelist }}
+                <label>{{ form.autoClose }} 空闲时自动关闭会话</label>
+                <label>空闲超时（分钟）:</label>{{ form.autoDisconnectTimeout }}
+                <label>{{ form.forceAlwaysRelay }} 强制走中继（Always Relay）</label>
+                <label>{{ form.allowWebSocket }} 允许 WebSocket 连接</label>
+                <label>{{ form.disableUDP }} 禁用 UDP（仅 TCP）</label>
+                <label>{{ form.allowInsecureTLSFallback }} 允许不安全 TLS 回退</label>
+                <label>{{ form.allowAutoUpdate }} 允许客户端自动更新</label>
+                <label>{{ form.hidecm }} 允许隐藏连接窗口</label>
+            </div>
+            <div class="section">
+                <h2><i class="fas fa-paint-brush"></i> 外观设置</h2>
+                <label>应用图标（PNG）:</label>{{ form.iconfile }}<div id="icon-preview"></div>{{ form.iconbase64 }}
+                <label>应用Logo（PNG）:</label>{{ form.logofile }}<div id="logo-preview"></div>{{ form.logobase64 }}
+                <label>主题:</label>{{ form.theme }}
+                <label>主题模式:</label>{{ form.themeDorO }}
+            </div>
+            <div class="section">
+                <h2><i class="fas fa-lock"></i> 权限设置</h2>
+                <small>权限可设为"默认"（用户可改）或"覆盖"（不可改）</small><br><br>
+                <label>权限模式:</label>{{ form.permissionsDorO }}
+                <label>策略写入模式:</label>{{ form.policyDorO }}
+                <label>权限类型:</label>{{ form.permissionsType }}
+                <div class="checkbox-group">
+                    <label>{{ form.enableKeyboard }} 键盘控制</label>
+                    <label>{{ form.enableClipboard }} 剪贴板</label>
+                    <label>{{ form.enableFileTransfer }} 文件传输</label>
+                    <label>{{ form.enableAudio }} 音频</label>
+                    <label>{{ form.enableTCP }} TCP隧道</label>
+                    <label>{{ form.enableRemoteRestart }} 远程重启</label>
+                    <label>{{ form.enableRecording }} 会话录制</label>
+                    <label>{{ form.enableBlockingInput }} 阻止输入</label>
+                    <label>{{ form.enableRemoteModi }} 远程配置修改</label>
+                    <label>{{ form.enablePrinter }} 远程打印</label>
+                    <label>{{ form.enableCamera }} 远程摄像头</label>
+                    <label>{{ form.enableTerminal }} 远程终端</label>
+                </div>
+                <label>文件传输最大文件数（可选）:</label>{{ form.fileTransferMaxFiles }}
+                <label>默认连接密码（可选）:</label>{{ form.defaultConnectPassword }}
+            </div>
+            <div class="section">
+                <h2><i class="fas fa-cog"></i> 其他设置</h2>
+                <label>{{ form.cycleMonitor }} 添加显示器切换按钮</label>
+                <label>{{ form.xOffline }} 离线设备显示X标记</label>
+                <label>{{ form.removeNewVersionNotif }} 移除新版本通知</label>
+                <label>{{ form.removeSetupServerTip }} 移除“搭建服务器提示”</label>
+                <label>{{ form.removeWallpaper }} 远程时移除壁纸</label><br>
+                <label>{{ form.hideServerSettings }} 隐藏服务器设置页</label>
+                <label>{{ form.hideNetworkSettings }} 隐藏网络设置页</label>
+                <label>{{ form.hideSecuritySettings }} 隐藏安全设置页</label>
+                <label>{{ form.hideProxySettings }} 隐藏代理设置</label>
+                <label>{{ form.hideWebSocketSettings }} 隐藏 WebSocket 设置</label>
+                <label>{{ form.hideHelpCards }} 隐藏帮助卡片</label>
+                <label>{{ form.hideTray }} 隐藏系统托盘</label>
+                <label>{{ form.hidePoweredByMe }} 隐藏 Powered by me</label>
+                <label>{{ form.mainWindowAlwaysOnTop }} 主窗口始终置顶</label>
+                <label>{{ form.disableChangePermanentPassword }} 禁止修改永久密码</label>
+                <label>{{ form.disableChangeID }} 禁止修改设备ID</label>
+                <label>{{ form.disableUnlockPin }} 禁止解锁PIN</label>
+                <label>{{ form.removePresetPasswordWarning }} 去除预置密码警告</label>
+                <a href="https://rustdesk.com/docs/en/self-host/client-configuration/advanced-settings/" target="_blank">高级设置说明</a>
+                <label>默认设置 (JSON):</label>{{ form.defaultManual }}
+                <label>覆盖设置 (JSON):</label>{{ form.overrideManual }}
+            </div>
+        </div>
+        <div class="platform"><div class="section" style="text-align:center;"><button type="submit"><i class="fas fa-rocket"></i> 生成自定义客户端</button></div></div>
+        {% csrf_token %}
+    </form>
+    <script>
+        document.querySelectorAll('.platform-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                document.querySelectorAll('.platform-icon').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById('id_platform').value = this.dataset.platform;
+            });
+        });
+        document.getElementById('id_platform').addEventListener('change', function() {
+            document.querySelectorAll('.platform-icon').forEach(i => i.classList.remove('active'));
+            var icon = document.querySelector('[data-platform="' + this.value + '"]');
+            if (icon) icon.classList.add('active');
+        });
+        ['id_iconfile', 'id_logofile'].forEach(function(id) {
+            var input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('change', function(e) {
+                    var file = e.target.files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onload = function(e) {
+                            var previewId = id.replace('id_', '').replace('file', '-preview');
+                            var preview = document.getElementById(previewId);
+                            if (preview) preview.innerHTML = '<img src="' + e.target.result + '" style="max-width:80px;">';
+                            var base64Id = id.replace('file', 'base64');
+                            var base64Input = document.getElementById(base64Id);
+                            if (base64Input) base64Input.value = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+        async function saveFormData() {
+            var filename = document.getElementById("id_exename").value;
+            if (!filename) { document.getElementById("filenameError").textContent = "请先填写文件名"; return; }
+            document.getElementById("filenameError").textContent = "";
+            var formData = {};
+            var form = document.getElementById("myForm");
+            var formDataObj = new FormData(form);
+            formDataObj.forEach(function(value, key) { formData[key] = value; });
+            form.querySelectorAll('select').forEach(function(select) { formData[select.name] = select.value; });
+            form.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(function(input) {
+                if (input.name) {
+                    if (input.checked) { formData[input.name] = input.type === 'checkbox' ? true : input.value; }
+                    else if (input.type === 'checkbox' && !formData.hasOwnProperty(input.name)) { formData[input.name] = false; }
+                }
+            });
+            var iconPreview = document.getElementById('icon-preview');
+            if (iconPreview && iconPreview.firstChild && iconPreview.firstChild.src) formData.iconfile = iconPreview.firstChild.src;
+            var logoPreview = document.getElementById('logo-preview');
+            if (logoPreview && logoPreview.firstChild && logoPreview.firstChild.src) formData.logofile = logoPreview.firstChild.src;
+            var jsonData = JSON.stringify(formData, null, 2);
+            var blob = new Blob([jsonData], { type: "application/json" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url; a.download = filename + ".json";
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        function loadFormData() {
+            var fileInput = document.getElementById("fileInput");
+            fileInput.value = '';
+            fileInput.click();
+        }
+        document.getElementById("fileInput").addEventListener("change", function(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        var formData = JSON.parse(e.target.result);
+                        for (var key in formData) {
+                            var elements = document.querySelectorAll('[name="' + key + '"], [id="' + key + '"]');
+                            if (elements.length > 0) {
+                                elements.forEach(function(element) {
+                                    if (element.type === 'radio') {
+                                        element.checked = (element.value === String(formData[key]));
+                                    } else if (element.type === 'checkbox') {
+                                        element.checked = formData[key];
+                                    } else if (element.type !== 'file') {
+                                        element.value = formData[key];
+                                    }
+                                    if (key === 'iconfile' && formData[key]) {
+                                        document.getElementById('id_iconbase64').value = formData[key];
+                                        document.getElementById('icon-preview').innerHTML = '<img src="' + formData[key] + '" style="max-width:80px;">';
+                                    }
+                                    if (key === 'logofile' && formData[key]) {
+                                        document.getElementById('id_logobase64').value = formData[key];
+                                        document.getElementById('logo-preview').innerHTML = '<img src="' + formData[key] + '" style="max-width:80px;">';
+                                    }
+                                });
+                            }
+                        }
+                        if (formData.platform) {
+                            document.querySelectorAll('.platform-icon').forEach(function(i) { i.classList.remove('active'); });
+                            var icon = document.querySelector('[data-platform="' + formData.platform + '"]');
+                            if (icon) icon.classList.add('active');
+                        }
+                        alert('配置加载成功！');
+                    } catch (error) {
+                        console.error('JSON解析错误:', error);
+                        alert("配置文件格式错误，请检查JSON文件\n错误: " + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+    </script>
+</body>
+</html>

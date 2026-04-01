@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title id="pageTitle">正在生成客户端</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+        }
+        .platform-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            display: none;
+        }
+        .loading-text { font-size: 24px; font-weight: 600; margin-bottom: 20px; }
+        .status-text { color: #aaa; font-size: 14px; margin: 10px 0; }
+        .loading-spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #0077ff;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .progress-bar {
+            width: 300px;
+            height: 8px;
+            background-color: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px auto;
+        }
+        .progress-bar-fill {
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(90deg, #0077ff, #00d4ff);
+            animation: progress 2s ease-in-out infinite;
+        }
+        @keyframes progress {
+            0% { width: 10%; }
+            50% { width: 70%; }
+            100% { width: 10%; }
+        }
+        .platform-note {
+            color: #888;
+            font-size: 12px;
+            margin-top: 20px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="windowsLogo" class="platform-logo">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#0078d4"/><text x="50" y="65" font-size="40" text-anchor="middle" fill="white">Win</text></svg>
+    </div>
+    <div id="linuxLogo" class="platform-logo">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#ff6600"/><text x="50" y="65" font-size="30" text-anchor="middle" fill="white">Linux</text></svg>
+    </div>
+    <div id="androidLogo" class="platform-logo">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#3ddc84"/><text x="50" y="60" font-size="20" text-anchor="middle" fill="white">Android</text></svg>
+    </div>
+    <div id="macosLogo" class="platform-logo">
+        <svg viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="#555"/><text x="50" y="65" font-size="30" text-anchor="middle" fill="white">Mac</text></svg>
+    </div>
+
+    <h2 class="loading-text">正在编译中...</h2>
+    <div class="loading-spinner"></div>
+    <div class="progress-bar"><div class="progress-bar-fill"></div></div>
+    <p class="status-text">编译过程大约需要 15-30 分钟</p>
+    <p class="status-text">状态: <span id="statusText">{{status}}</span></p>
+    <p class="status-text" style="color:#666;">请勿关闭此页面，编译完成后将自动跳转下载</p>
+
+    <div id="platformNote" class="platform-note"></div>
+
+    <script>
+        const platform = '{{platform}}'.toLowerCase();
+        const logos = {
+            'windows': 'windowsLogo', 'windows-x86': 'windowsLogo',
+            'linux': 'linuxLogo', 'android': 'androidLogo', 'macos': 'macosLogo'
+        };
+        const titles = {
+            'windows': '正在生成 Windows 64位 客户端',
+            'windows-x86': '正在生成 Windows 32位 客户端',
+            'linux': '正在生成 Linux 客户端',
+            'android': '正在生成 Android 客户端',
+            'macos': '正在生成 macOS 客户端'
+        };
+        const notes = {
+            'macos': '提示：macOS 可能需要在系统设置中允许运行此应用',
+            'windows': '提示：Windows 可能会弹出 SmartScreen 警告',
+            'android': '提示：安装前需启用"允许安装未知来源应用"'
+        };
+
+        if (logos[platform]) {
+            document.getElementById(logos[platform]).style.display = 'block';
+        }
+        if (titles[platform]) {
+            document.getElementById('pageTitle').textContent = titles[platform];
+        }
+        if (notes[platform]) {
+            const noteEl = document.getElementById('platformNote');
+            noteEl.textContent = notes[platform];
+            noteEl.style.display = 'block';
+        }
+
+        setTimeout(function() {
+            window.location.replace('/check_for_file?filename={{filename}}&uuid={{uuid}}&platform={{platform}}');
+        }, 5000);
+    </script>
+</body>
+</html>
