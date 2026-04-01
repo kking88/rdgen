@@ -13,6 +13,11 @@ on:
         required: true
         default: ''
         type: string
+      upload-tag:
+        description: 'upload tag name'
+        required: false
+        default: ''
+        type: string
 
 
 env:
