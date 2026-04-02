@@ -377,6 +377,55 @@ def generator_view(request):
             policy_target['disable-change-id'] = yn(disableChangeID)
             policy_target['disable-unlock-pin'] = yn(disableUnlockPin)
             policy_target['remove-preset-password-warning'] = yn(removePresetPasswordWarning)
+
+            # Extra advanced toggles: checked => write Y, unchecked => do not force N
+            # to preserve upstream defaults for options that vary by platform/version.
+            extra_toggle_key_map = {
+                'allowAskForNote': 'allow-ask-for-note',
+                'allowD3DRender': 'allow-d3d-render',
+                'allowRemoteCMModification': 'allow-remote-cm-modification',
+                'collapseToolbar': 'collapse-toolbar',
+                'disableAudioViewer': 'disable-audio',
+                'disableClipboardViewer': 'disable-clipboard',
+                'disableDiscoveryPanel': 'disable-discovery-panel',
+                'disableFloatingWindow': 'disable-floating-window',
+                'disableGroupPanel': 'disable-group-panel',
+                'displaysAsIndividualWindows': 'displays-as-individual-windows',
+                'enableConfirmClosingTabs': 'enable-confirm-closing-tabs',
+                'enableFileCopyPaste': 'enable-file-copy-paste',
+                'enableFlutterHttpOnRust': 'enable-flutter-http-on-rust',
+                'enableOpenNewConnectionsInTabs': 'enable-open-new-connections-in-tabs',
+                'filterAbByIntersection': 'filter-ab-by-intersection',
+                'followRemoteCursor': 'follow-remote-cursor',
+                'followRemoteWindow': 'follow-remote-window',
+                'hideAbTagsPanel': 'hideAbTagsPanel',
+                'i444': 'i444',
+                'keepScreenOn': 'keep-screen-on',
+                'keepAwakeDuringIncomingSessions': 'keep-awake-during-incoming-sessions',
+                'keepAwakeDuringOutgoingSessions': 'keep-awake-during-outgoing-sessions',
+                'lockAfterSessionEnd': 'lock-after-session-end',
+                'preElevateService': 'pre-elevate-service',
+                'privacyMode': 'privacy-mode',
+                'reverseMouseWheel': 'reverse-mouse-wheel',
+                'showMonitorsToolbar': 'show-monitors-toolbar',
+                'showQualityMonitor': 'show-quality-monitor',
+                'showRemoteCursor': 'show-remote-cursor',
+                'showVirtualJoystick': 'show-virtual-joystick',
+                'showVirtualMouse': 'show-virtual-mouse',
+                'swapLeftRightMouse': 'swap-left-right-mouse',
+                'syncAbTags': 'sync-ab-tags',
+                'syncAbWithRecentSessions': 'sync-ab-with-recent-sessions',
+                'syncInitClipboard': 'sync-init-clipboard',
+                'touchMode': 'touch-mode',
+                'useAllMyDisplaysForRemoteSession': 'use-all-my-displays-for-the-remote-session',
+                'useTextureRender': 'use-texture-render',
+                'viewOnly': 'view-only',
+                'zoomCursor': 'zoom-cursor',
+            }
+            for field_name, key_name in extra_toggle_key_map.items():
+                if form.cleaned_data.get(field_name):
+                    policy_target[key_name] = 'Y'
+
             if apiServer:
                 policy_target['api-server'] = apiServer
             if relayServer:
