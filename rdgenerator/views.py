@@ -96,11 +96,18 @@ def generator_view(request):
             apiServer = form.cleaned_data['apiServer']
             urlLink = form.cleaned_data['urlLink']
             downloadLink = form.cleaned_data['downloadLink']
+            updateCheckUrl = form.cleaned_data['updateCheckUrl'].strip()
+            allowCustomClientUpdate = form.cleaned_data['allowCustomClientUpdate']
             serverProfilesRaw = form.cleaned_data['serverProfilesJson']
             try:
                 serverProfiles = sanitize_server_profiles(serverProfilesRaw)
             except ValueError as exc:
                 form.add_error('serverProfilesJson', str(exc))
+                return render(request, 'generator.html', {'form': form})
+            if updateCheckUrl and not (
+                updateCheckUrl.startswith('http://') or updateCheckUrl.startswith('https://')
+            ):
+                form.add_error('updateCheckUrl', 'Update check API URL must start with http:// or https://')
                 return render(request, 'generator.html', {'form': form})
             primaryProfile = serverProfiles[0] if serverProfiles else None
             if not server and primaryProfile:
@@ -379,6 +386,8 @@ def generator_view(request):
                 "genurl":_settings.GENURL,
                 "urlLink":urlLink,
                 "downloadLink":downloadLink,
+                "updateCheckUrl": updateCheckUrl,
+                "allowCustomClientUpdate": 'true' if allowCustomClientUpdate else 'false',
                 "delayFix": 'true' if delayFix else 'false',
                 "rdgen":'true',
                 "cycleMonitor": 'true' if cycleMonitor else 'false',

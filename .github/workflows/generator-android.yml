@@ -346,6 +346,14 @@ jobs:
         run: |
           wget https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/.github/patches/apply_flutter_server_profiles.py
           python3 apply_flutter_server_profiles.py "${{ env.serverProfilesB64 }}"
+
+      - name: apply custom update endpoint and behavior
+        if: ${{ env.updateCheckUrl != '' || env.allowCustomClientUpdate == 'true' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          wget https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/.github/patches/apply_custom_client_update_behavior.py
+          python3 apply_custom_client_update_behavior.py "${{ env.updateCheckUrl }}" "${{ env.allowCustomClientUpdate }}"
           
       - name: change appname to custom
         if: env.appname != 'rustdesk'

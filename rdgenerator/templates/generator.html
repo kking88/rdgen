@@ -71,6 +71,12 @@
                 <label>API 服务器:</label>{{ form.apiServer }}
                 <label>自定义链接:</label>{{ form.urlLink }}
                 <label>自定义下载地址:</label>{{ form.downloadLink }}
+                <label>自定义更新检查 API（可选）:</label>{{ form.updateCheckUrl }}
+                <small>示例: https://your-domain.example/version/latest</small>
+                {% if form.updateCheckUrl.errors %}
+                    <ul class="errorlist">{% for error in form.updateCheckUrl.errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                {% endif %}
+                <label>{{ form.allowCustomClientUpdate }} 允许自定义客户端检查更新</label>
                 <label>公司名称:</label>{{ form.compname }}
                 <label>内置服务器组 JSON（可选）:</label>{{ form.serverProfilesJson }}
                 <small>格式: [{"name":"主站","idServer":"host:21116","relayServer":"host:21117","apiServer":"https://api.example.com","key":"xxx"}]</small>

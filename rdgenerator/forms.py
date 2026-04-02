@@ -32,6 +32,8 @@ class GenerateForm(forms.Form):
     key = forms.CharField(label="Key", required=False)
     urlLink = forms.CharField(label="Custom URL for links", required=False)
     downloadLink = forms.CharField(label="Custom URL for downloading new versions", required=False)
+    updateCheckUrl = forms.CharField(label="Custom URL for update check API", required=False)
+    allowCustomClientUpdate = forms.BooleanField(initial=False, required=False)
     compname = forms.CharField(label="Company name",required=False)
     serverProfilesJson = forms.CharField(label="Built-in server profiles JSON", widget=forms.Textarea, required=False)
 

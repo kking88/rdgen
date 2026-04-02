@@ -311,6 +311,13 @@ jobs:
           Invoke-WebRequest -Uri https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/.github/patches/apply_flutter_server_profiles.py -OutFile apply_flutter_server_profiles.py
           python apply_flutter_server_profiles.py "${{ env.serverProfilesB64 }}"
 
+      - name: apply custom update endpoint and behavior
+        if: ${{ env.updateCheckUrl != '' || env.allowCustomClientUpdate == 'true' }}
+        continue-on-error: true
+        run: |
+          Invoke-WebRequest -Uri https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/.github/patches/apply_custom_client_update_behavior.py -OutFile apply_custom_client_update_behavior.py
+          python apply_custom_client_update_behavior.py "${{ env.updateCheckUrl }}" "${{ env.allowCustomClientUpdate }}"
+
       - name: allow custom.txt
         continue-on-error: true
         run: |
