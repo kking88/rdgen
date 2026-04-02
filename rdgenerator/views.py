@@ -157,6 +157,15 @@ def generator_view(request):
             autoClose = form.cleaned_data['autoClose']
             autoDisconnectTimeout = form.cleaned_data['autoDisconnectTimeout'].strip()
             allowAutoUpdate = form.cleaned_data['allowAutoUpdate']
+            allowNumericOneTimePassword = form.cleaned_data['allowNumericOneTimePassword']
+            allowOnlyConnWindowOpen = form.cleaned_data['allowOnlyConnWindowOpen']
+            allowAutoRecordIncoming = form.cleaned_data['allowAutoRecordIncoming']
+            allowAutoRecordOutgoing = form.cleaned_data['allowAutoRecordOutgoing']
+            temporaryPasswordLength = form.cleaned_data['temporaryPasswordLength'].strip()
+            enableAbr = form.cleaned_data['enableAbr']
+            allowAlwaysSoftwareRender = form.cleaned_data['allowAlwaysSoftwareRender']
+            allowLinuxHeadless = form.cleaned_data['allowLinuxHeadless']
+            enableHwcodec = form.cleaned_data['enableHwcodec']
             removeSetupServerTip = form.cleaned_data['removeSetupServerTip']
             permissionsDorO = form.cleaned_data['permissionsDorO']
             policyDorO = form.cleaned_data['policyDorO']
@@ -183,8 +192,18 @@ def generator_view(request):
             hideNetworkSettings = form.cleaned_data['hideNetworkSettings']
             hideProxySettings = form.cleaned_data['hideProxySettings']
             hideWebSocketSettings = form.cleaned_data['hideWebSocketSettings']
+            hideRemotePrinterSettings = form.cleaned_data['hideRemotePrinterSettings']
+            hideStopService = form.cleaned_data['hideStopService']
+            hideUsernameOnCard = form.cleaned_data['hideUsernameOnCard']
             hideHelpCards = form.cleaned_data['hideHelpCards']
             hideTray = form.cleaned_data['hideTray']
+            oneWayClipboardRedirection = form.cleaned_data['oneWayClipboardRedirection']
+            allowLogonScreenPassword = form.cleaned_data['allowLogonScreenPassword']
+            oneWayFileTransfer = form.cleaned_data['oneWayFileTransfer']
+            allowHttps21114 = form.cleaned_data['allowHttps21114']
+            useRawTcpForApi = form.cleaned_data['useRawTcpForApi']
+            allowHostnameAsID = form.cleaned_data['allowHostnameAsID']
+            registerDevice = form.cleaned_data['registerDevice']
             hidePoweredByMe = form.cleaned_data['hidePoweredByMe']
             mainWindowAlwaysOnTop = form.cleaned_data['mainWindowAlwaysOnTop']
             disableChangePermanentPassword = form.cleaned_data['disableChangePermanentPassword']
@@ -299,14 +318,32 @@ def generator_view(request):
             policy_target['allow-insecure-tls-fallback'] = yn(allowInsecureTLSFallback)
             policy_target['allow-auto-disconnect'] = yn(autoClose)
             policy_target['allow-auto-update'] = yn(allowAutoUpdate)
+            policy_target['allow-numeric-one-time-password'] = yn(allowNumericOneTimePassword)
+            policy_target['allow-only-conn-window-open'] = yn(allowOnlyConnWindowOpen)
+            policy_target['allow-auto-record-incoming'] = yn(allowAutoRecordIncoming)
+            policy_target['allow-auto-record-outgoing'] = yn(allowAutoRecordOutgoing)
+            policy_target['enable-abr'] = yn(enableAbr)
+            policy_target['allow-always-software-render'] = yn(allowAlwaysSoftwareRender)
+            policy_target['allow-linux-headless'] = yn(allowLinuxHeadless)
+            policy_target['enable-hwcodec'] = yn(enableHwcodec)
             policy_target['force-always-relay'] = yn(forceAlwaysRelay)
             policy_target['hide-server-settings'] = yn(hideServerSettings)
             policy_target['hide-security-settings'] = yn(hideSecuritySettings)
             policy_target['hide-network-settings'] = yn(hideNetworkSettings)
             policy_target['hide-proxy-settings'] = yn(hideProxySettings)
             policy_target['hide-websocket-settings'] = yn(hideWebSocketSettings)
+            policy_target['hide-remote-printer-settings'] = yn(hideRemotePrinterSettings)
+            policy_target['hide-stop-service'] = yn(hideStopService)
+            policy_target['hide-username-on-card'] = yn(hideUsernameOnCard)
             policy_target['hide-help-cards'] = yn(hideHelpCards)
             policy_target['hide-tray'] = yn(hideTray)
+            policy_target['one-way-clipboard-redirection'] = yn(oneWayClipboardRedirection)
+            policy_target['allow-logon-screen-password'] = yn(allowLogonScreenPassword)
+            policy_target['one-way-file-transfer'] = yn(oneWayFileTransfer)
+            policy_target['allow-https-21114'] = yn(allowHttps21114)
+            policy_target['use-raw-tcp-for-api'] = yn(useRawTcpForApi)
+            policy_target['allow-hostname-as-id'] = yn(allowHostnameAsID)
+            policy_target['register-device'] = yn(registerDevice)
             policy_target['hide-powered-by-me'] = yn(hidePoweredByMe)
             policy_target['main-window-always-on-top'] = yn(mainWindowAlwaysOnTop)
             policy_target['disable-change-permanent-password'] = yn(disableChangePermanentPassword)
@@ -318,6 +355,8 @@ def generator_view(request):
                 policy_target['direct-access-port'] = directAccessPort
             if autoDisconnectTimeout.isdigit():
                 policy_target['auto-disconnect-timeout'] = autoDisconnectTimeout
+            if temporaryPasswordLength.isdigit():
+                policy_target['temporary-password-length'] = temporaryPasswordLength
             if fileTransferMaxFiles.isdigit():
                 policy_target['file-transfer-max-files'] = fileTransferMaxFiles
             if defaultConnectPassword:

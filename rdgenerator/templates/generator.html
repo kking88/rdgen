@@ -99,6 +99,15 @@
                 <label>{{ form.disableUDP }} 禁用 UDP（仅 TCP）</label>
                 <label>{{ form.allowInsecureTLSFallback }} 允许不安全 TLS 回退</label>
                 <label>{{ form.allowAutoUpdate }} 允许客户端自动更新</label>
+                <label>{{ form.allowNumericOneTimePassword }} 允许数字一次性密码</label>
+                <label>{{ form.allowOnlyConnWindowOpen }} 仅允许连接窗口打开时被控</label>
+                <label>{{ form.allowAutoRecordIncoming }} 自动录制传入会话</label>
+                <label>{{ form.allowAutoRecordOutgoing }} 自动录制传出会话</label>
+                <label>临时密码长度（如 6/8/10）:</label>{{ form.temporaryPasswordLength }}
+                <label>{{ form.enableAbr }} 启用自适应码率（ABR）</label>
+                <label>{{ form.allowAlwaysSoftwareRender }} 允许始终软件渲染</label>
+                <label>{{ form.allowLinuxHeadless }} 允许 Linux 无头模式</label>
+                <label>{{ form.enableHwcodec }} 启用硬件编解码</label>
                 <label>{{ form.hidecm }} 允许隐藏连接窗口</label>
             </div>
             <div class="section">
@@ -143,8 +152,18 @@
                 <label>{{ form.hideSecuritySettings }} 隐藏安全设置页</label>
                 <label>{{ form.hideProxySettings }} 隐藏代理设置</label>
                 <label>{{ form.hideWebSocketSettings }} 隐藏 WebSocket 设置</label>
+                <label>{{ form.hideRemotePrinterSettings }} 隐藏远程打印设置</label>
+                <label>{{ form.hideStopService }} 隐藏停止服务入口</label>
+                <label>{{ form.hideUsernameOnCard }} 在卡片上隐藏用户名</label>
                 <label>{{ form.hideHelpCards }} 隐藏帮助卡片</label>
                 <label>{{ form.hideTray }} 隐藏系统托盘</label>
+                <label>{{ form.oneWayClipboardRedirection }} 单向剪贴板重定向</label>
+                <label>{{ form.allowLogonScreenPassword }} 允许登录界面密码</label>
+                <label>{{ form.oneWayFileTransfer }} 单向文件传输</label>
+                <label>{{ form.allowHttps21114 }} 允许 HTTPS:21114</label>
+                <label>{{ form.useRawTcpForApi }} API 使用原始 TCP</label>
+                <label>{{ form.allowHostnameAsID }} 允许主机名作为ID</label>
+                <label>{{ form.registerDevice }} 允许注册设备</label>
                 <label>{{ form.hidePoweredByMe }} 隐藏 Powered by me</label>
                 <label>{{ form.mainWindowAlwaysOnTop }} 主窗口始终置顶</label>
                 <label>{{ form.disableChangePermanentPassword }} 禁止修改永久密码</label>
