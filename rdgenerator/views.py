@@ -94,6 +94,12 @@ def generator_view(request):
             server = form.cleaned_data['serverIP']
             key = form.cleaned_data['key']
             apiServer = form.cleaned_data['apiServer']
+            relayServer = form.cleaned_data['relayServer'].strip()
+            iceServers = form.cleaned_data['iceServers'].strip()
+            customRendezvousServer = form.cleaned_data['customRendezvousServer'].strip()
+            proxyUrl = form.cleaned_data['proxyUrl'].strip()
+            proxyUsername = form.cleaned_data['proxyUsername'].strip()
+            proxyPassword = form.cleaned_data['proxyPassword'].strip()
             urlLink = form.cleaned_data['urlLink']
             downloadLink = form.cleaned_data['downloadLink']
             updateCheckUrl = form.cleaned_data['updateCheckUrl'].strip()
@@ -187,6 +193,21 @@ def generator_view(request):
             enableTerminal = form.cleaned_data['enableTerminal']
             fileTransferMaxFiles = form.cleaned_data['fileTransferMaxFiles'].strip()
             defaultConnectPassword = form.cleaned_data['defaultConnectPassword'].strip()
+            enableDirectxCapture = form.cleaned_data['enableDirectxCapture']
+            enableTrustedDevices = form.cleaned_data['enableTrustedDevices']
+            presetAddressBookName = form.cleaned_data['presetAddressBookName'].strip()
+            presetAddressBookTag = form.cleaned_data['presetAddressBookTag'].strip()
+            presetAddressBookAlias = form.cleaned_data['presetAddressBookAlias'].strip()
+            presetAddressBookPassword = form.cleaned_data['presetAddressBookPassword'].strip()
+            presetAddressBookNote = form.cleaned_data['presetAddressBookNote'].strip()
+            presetDeviceUsername = form.cleaned_data['presetDeviceUsername'].strip()
+            presetDeviceName = form.cleaned_data['presetDeviceName'].strip()
+            presetNote = form.cleaned_data['presetNote'].strip()
+            displayName = form.cleaned_data['displayName'].strip()
+            avatar = form.cleaned_data['avatar'].strip()
+            presetDeviceGroupName = form.cleaned_data['presetDeviceGroupName'].strip()
+            presetUserName = form.cleaned_data['presetUserName'].strip()
+            presetStrategyName = form.cleaned_data['presetStrategyName'].strip()
             hideServerSettings = form.cleaned_data['hideServerSettings']
             hideSecuritySettings = form.cleaned_data['hideSecuritySettings']
             hideNetworkSettings = form.cleaned_data['hideNetworkSettings']
@@ -326,6 +347,8 @@ def generator_view(request):
             policy_target['allow-always-software-render'] = yn(allowAlwaysSoftwareRender)
             policy_target['allow-linux-headless'] = yn(allowLinuxHeadless)
             policy_target['enable-hwcodec'] = yn(enableHwcodec)
+            policy_target['enable-directx-capture'] = yn(enableDirectxCapture)
+            policy_target['enable-trusted-devices'] = yn(enableTrustedDevices)
             policy_target['force-always-relay'] = yn(forceAlwaysRelay)
             policy_target['hide-server-settings'] = yn(hideServerSettings)
             policy_target['hide-security-settings'] = yn(hideSecuritySettings)
@@ -350,6 +373,46 @@ def generator_view(request):
             policy_target['disable-change-id'] = yn(disableChangeID)
             policy_target['disable-unlock-pin'] = yn(disableUnlockPin)
             policy_target['remove-preset-password-warning'] = yn(removePresetPasswordWarning)
+            if apiServer:
+                policy_target['api-server'] = apiServer
+            if relayServer:
+                policy_target['relay-server'] = relayServer
+            if iceServers:
+                policy_target['ice-servers'] = iceServers
+            if customRendezvousServer:
+                policy_target['custom-rendezvous-server'] = customRendezvousServer
+            if proxyUrl:
+                policy_target['proxy-url'] = proxyUrl
+            if proxyUsername:
+                policy_target['proxy-username'] = proxyUsername
+            if proxyPassword:
+                policy_target['proxy-password'] = proxyPassword
+            if presetAddressBookName:
+                policy_target['preset-address-book-name'] = presetAddressBookName
+            if presetAddressBookTag:
+                policy_target['preset-address-book-tag'] = presetAddressBookTag
+            if presetAddressBookAlias:
+                policy_target['preset-address-book-alias'] = presetAddressBookAlias
+            if presetAddressBookPassword:
+                policy_target['preset-address-book-password'] = presetAddressBookPassword
+            if presetAddressBookNote:
+                policy_target['preset-address-book-note'] = presetAddressBookNote
+            if presetDeviceUsername:
+                policy_target['preset-device-username'] = presetDeviceUsername
+            if presetDeviceName:
+                policy_target['preset-device-name'] = presetDeviceName
+            if presetNote:
+                policy_target['preset-note'] = presetNote
+            if displayName:
+                policy_target['display-name'] = displayName
+            if avatar:
+                policy_target['avatar'] = avatar
+            if presetDeviceGroupName:
+                policy_target['preset-device-group-name'] = presetDeviceGroupName
+            if presetUserName:
+                policy_target['preset-user-name'] = presetUserName
+            if presetStrategyName:
+                policy_target['preset-strategy-name'] = presetStrategyName
 
             if directAccessPort.isdigit():
                 policy_target['direct-access-port'] = directAccessPort

@@ -69,6 +69,12 @@
                 <label>服务器地址:</label>{{ form.serverIP }}
                 <label>公钥:</label>{{ form.key }}
                 <label>API 服务器:</label>{{ form.apiServer }}
+                <label>中继服务器（可选）:</label>{{ form.relayServer }}
+                <label>ICE 服务器（可选）:</label>{{ form.iceServers }}
+                <label>自定义 rendezvous 选项（可选）:</label>{{ form.customRendezvousServer }}
+                <label>代理 URL（可选）:</label>{{ form.proxyUrl }}
+                <label>代理用户名（可选）:</label>{{ form.proxyUsername }}
+                <label>代理密码（可选）:</label>{{ form.proxyPassword }}
                 <label>自定义链接:</label>{{ form.urlLink }}
                 <label>自定义下载地址:</label>{{ form.downloadLink }}
                 <label>自定义更新检查 API（可选）:</label>{{ form.updateCheckUrl }}
@@ -139,6 +145,8 @@
                 </div>
                 <label>文件传输最大文件数（可选）:</label>{{ form.fileTransferMaxFiles }}
                 <label>默认连接密码（可选）:</label>{{ form.defaultConnectPassword }}
+                <label>{{ form.enableDirectxCapture }} 启用 DirectX 捕获（Windows）</label>
+                <label>{{ form.enableTrustedDevices }} 启用可信设备</label>
             </div>
             <div class="section">
                 <h2><i class="fas fa-cog"></i> 其他设置</h2>
@@ -170,6 +178,19 @@
                 <label>{{ form.disableChangeID }} 禁止修改设备ID</label>
                 <label>{{ form.disableUnlockPin }} 禁止解锁PIN</label>
                 <label>{{ form.removePresetPasswordWarning }} 去除预置密码警告</label>
+                <label>显示名称（可选）:</label>{{ form.displayName }}
+                <label>头像字段（可选）:</label>{{ form.avatar }}
+                <label>预设设备分组名（可选）:</label>{{ form.presetDeviceGroupName }}
+                <label>预设用户名（可选）:</label>{{ form.presetUserName }}
+                <label>预设策略名（可选）:</label>{{ form.presetStrategyName }}
+                <label>预设地址簿名（可选）:</label>{{ form.presetAddressBookName }}
+                <label>预设地址簿标签（可选）:</label>{{ form.presetAddressBookTag }}
+                <label>预设地址簿别名（可选）:</label>{{ form.presetAddressBookAlias }}
+                <label>预设地址簿密码（可选）:</label>{{ form.presetAddressBookPassword }}
+                <label>预设地址簿备注（可选）:</label>{{ form.presetAddressBookNote }}
+                <label>预设设备用户名（可选）:</label>{{ form.presetDeviceUsername }}
+                <label>预设设备名（可选）:</label>{{ form.presetDeviceName }}
+                <label>预设备注（可选）:</label>{{ form.presetNote }}
                 <a href="https://rustdesk.com/docs/en/self-host/client-configuration/advanced-settings/" target="_blank">高级设置说明</a>
                 <label>默认设置 (JSON):</label>{{ form.defaultManual }}
                 <label>覆盖设置 (JSON):</label>{{ form.overrideManual }}
