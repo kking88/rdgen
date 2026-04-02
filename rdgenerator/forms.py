@@ -80,6 +80,8 @@ class GenerateForm(forms.Form):
     allowAlwaysSoftwareRender = forms.BooleanField(initial=False, required=False)
     allowLinuxHeadless = forms.BooleanField(initial=False, required=False)
     enableHwcodec = forms.BooleanField(initial=True, required=False)
+    enableUdpPunch = forms.BooleanField(initial=True, required=False)
+    enableIpv6Punch = forms.BooleanField(initial=True, required=False)
     removeSetupServerTip = forms.BooleanField(initial=True, required=False)
 
     #Permissions

@@ -172,6 +172,8 @@ def generator_view(request):
             allowAlwaysSoftwareRender = form.cleaned_data['allowAlwaysSoftwareRender']
             allowLinuxHeadless = form.cleaned_data['allowLinuxHeadless']
             enableHwcodec = form.cleaned_data['enableHwcodec']
+            enableUdpPunch = form.cleaned_data['enableUdpPunch']
+            enableIpv6Punch = form.cleaned_data['enableIpv6Punch']
             removeSetupServerTip = form.cleaned_data['removeSetupServerTip']
             permissionsDorO = form.cleaned_data['permissionsDorO']
             policyDorO = form.cleaned_data['policyDorO']
@@ -347,6 +349,8 @@ def generator_view(request):
             policy_target['allow-always-software-render'] = yn(allowAlwaysSoftwareRender)
             policy_target['allow-linux-headless'] = yn(allowLinuxHeadless)
             policy_target['enable-hwcodec'] = yn(enableHwcodec)
+            policy_target['enable-udp-punch'] = yn(enableUdpPunch)
+            policy_target['enable-ipv6-punch'] = yn(enableIpv6Punch)
             policy_target['enable-directx-capture'] = yn(enableDirectxCapture)
             policy_target['enable-trusted-devices'] = yn(enableTrustedDevices)
             policy_target['force-always-relay'] = yn(forceAlwaysRelay)
